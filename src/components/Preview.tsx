@@ -62,7 +62,7 @@ export default function Preview({ files }: PreviewProps) {
       </div>
       
       {error && (
-        <div className="error-message">
+        <div className="error-message p-2">
           {error}
         </div>
       )}

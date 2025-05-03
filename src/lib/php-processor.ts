@@ -32,12 +32,24 @@ function simulatePhpExecution(phpCode: string): string {
     const echoPattern = /echo\s+['"](.+?)['"];/g;
     let match;
     
-    while ((match = echoPattern.exec(phpCode)) !== null) {
+    // Process echo statements that contain style tags
+    let fullPhpCode = phpCode;
+    const styleTagPattern = /echo\s+['"](<style[\s\S]*?<\/style>)['"]\s*;/g;
+    let styleMatch;
+    
+    while ((styleMatch = styleTagPattern.exec(phpCode)) !== null) {
+      output += styleMatch[1]; // Add the style tag directly to output
+      // Remove the processed style tag from fullPhpCode to avoid duplicate processing
+      fullPhpCode = fullPhpCode.replace(styleMatch[0], '');
+    }
+    
+    // Process regular echo statements
+    while ((match = echoPattern.exec(fullPhpCode)) !== null) {
       output += match[1];
     }
     
     // Process PHP variables within HTML/CSS/JS sections
-    // This is a very simplified simulation
+    // This is a simplified simulation
     const phpPattern = /\$(\w+)/g;
     const variables: { [key: string]: string } = {};
     
