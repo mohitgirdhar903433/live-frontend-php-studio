@@ -3,6 +3,7 @@ import { useState, useRef, useEffect } from "react";
 import Editor from "@monaco-editor/react";
 import { Button } from "@/components/ui/button";
 import { FileCode, Play, RefreshCcw, Save } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface File {
   id: string;
@@ -16,6 +17,7 @@ interface CodeEditorProps {
 }
 
 export default function CodeEditor({ onExecute }: CodeEditorProps) {
+  const isMobile = useIsMobile();
   const [file, setFile] = useState<File>({
     id: "1",
     name: "index.php",
@@ -116,7 +118,7 @@ echo '<style>
 
   return (
     <div className="editor-container bg-editor">
-      <div className="flex items-center border-b border-border">
+      <div className="flex flex-wrap items-center border-b border-border">
         <div className="flex overflow-x-auto">
           <div className="editor-tab editor-tab-active">
             <FileCode className="w-4 h-4" />
@@ -124,11 +126,11 @@ echo '<style>
           </div>
         </div>
         
-        <div className="ml-auto flex items-center p-1">
+        <div className={`${isMobile ? 'w-full pt-1 pb-1 border-t border-border mt-1' : 'ml-auto'} flex items-center p-1`}>
           <Button 
             variant="outline" 
-            size="sm" 
-            className="ml-2" 
+            size={isMobile ? "sm" : "sm"} 
+            className={isMobile ? "flex-1 mr-1" : "ml-2"} 
             onClick={handleRun}
           >
             <Play className="w-4 h-4 mr-1" />
@@ -137,7 +139,7 @@ echo '<style>
           <Button 
             variant="outline" 
             size="icon" 
-            className="ml-2" 
+            className={isMobile ? "flex-none" : "ml-2"} 
             title="Save File"
           >
             <Save className="w-4 h-4" />
@@ -154,8 +156,8 @@ echo '<style>
           onChange={handleContentChange}
           onMount={handleEditorDidMount}
           options={{
-            minimap: { enabled: false },
-            fontSize: 14,
+            minimap: { enabled: !isMobile },
+            fontSize: isMobile ? 12 : 14,
             lineNumbers: "on",
             scrollBeyondLastLine: false,
             automaticLayout: true,

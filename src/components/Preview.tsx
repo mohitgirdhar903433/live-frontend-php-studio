@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { RefreshCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { processPhpCode } from "@/lib/php-processor";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface File {
   id: string;
@@ -16,6 +17,7 @@ interface PreviewProps {
 }
 
 export default function Preview({ files }: PreviewProps) {
+  const isMobile = useIsMobile();
   const [output, setOutput] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -56,13 +58,14 @@ export default function Preview({ files }: PreviewProps) {
           size="icon"
           onClick={processFiles}
           disabled={isLoading}
+          className={isMobile ? "h-7 w-7" : ""}
         >
           <RefreshCcw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
         </Button>
       </div>
       
       {error && (
-        <div className="error-message p-2">
+        <div className="error-message p-2 text-xs sm:text-sm">
           {error}
         </div>
       )}
