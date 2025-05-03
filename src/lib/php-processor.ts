@@ -2,43 +2,31 @@
 // This is a simplified simulation of PHP processing
 // In a real app, this would connect to a backend service
 
-export async function processPhpCode(
-  phpCode: string,
-  cssCode: string = "",
-  jsCode: string = ""
-): Promise<string> {
+export async function processPhpCode(phpCode: string): Promise<string> {
   try {
     // Extract the PHP part and non-PHP parts
     const htmlOutput = simulatePhpExecution(phpCode);
     
-    // Combine everything into a complete HTML document
-    const fullOutput = `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <meta charset="utf-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <style>${cssCode}</style>
-        </head>
-        <body>
-          ${htmlOutput}
-          <script>${jsCode}</script>
-        </body>
-      </html>
-    `;
-    
-    return fullOutput;
+    // The full output is now directly what's returned from PHP processing
+    // since all CSS and JS are already embedded in the PHP file
+    return htmlOutput;
   } catch (error: any) {
     throw new Error(`PHP processing error: ${error.message}`);
   }
 }
 
 function simulatePhpExecution(phpCode: string): string {
-  let output = "";
-  
   try {
-    // Simple regex-based PHP simulation
-    // This is just for demonstration - a real system would use a PHP interpreter
+    // Start with a complete HTML document
+    let output = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        </head>
+        <body>
+    `;
     
     // Process PHP echo statements
     const echoPattern = /echo\s+['"](.+?)['"];/g;
@@ -48,6 +36,18 @@ function simulatePhpExecution(phpCode: string): string {
       output += match[1];
     }
     
+    // Process PHP variables within HTML/CSS/JS sections
+    // This is a very simplified simulation
+    const phpPattern = /\$(\w+)/g;
+    const variables: { [key: string]: string } = {};
+    
+    // Extract variable definitions
+    const varPattern = /\$(\w+)\s*=\s*['"](.+?)['"];/g;
+    let varMatch;
+    while ((varMatch = varPattern.exec(phpCode)) !== null) {
+      variables[varMatch[1]] = varMatch[2];
+    }
+    
     // Extract HTML parts (content outside PHP tags)
     const htmlParts = phpCode.split(/(<\?php|\?>)/g);
     for (let i = 0; i < htmlParts.length; i++) {
@@ -55,18 +55,40 @@ function simulatePhpExecution(phpCode: string): string {
       
       // If this is HTML (not PHP tag or PHP code block)
       if (part !== '<?php' && part !== '?>' && !htmlParts[i-1]?.includes('<?php')) {
-        output += part;
+        // Replace PHP variables in HTML
+        let processedPart = part;
+        const variableMatches = part.match(/\$(\w+)/g);
+        if (variableMatches) {
+          for (const match of variableMatches) {
+            const varName = match.substring(1); // Remove $ prefix
+            if (variables[varName]) {
+              processedPart = processedPart.replace(match, variables[varName]);
+            }
+          }
+        }
+        output += processedPart;
       }
     }
     
-    // If no output was generated, provide a placeholder
-    if (output.trim() === "") {
-      output = "<div>No output generated from PHP code</div>";
-    }
+    // Complete the HTML document
+    output += `
+        </body>
+      </html>
+    `;
     
     return output;
   } catch (error) {
-    return `<div class="error-message">Error executing PHP: ${error}</div>`;
+    return `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+        </head>
+        <body>
+          <div class="error-message">Error executing PHP: ${error}</div>
+        </body>
+      </html>
+    `;
   }
 }
 

@@ -4,12 +4,10 @@ import Editor from "@monaco-editor/react";
 import { Button } from "@/components/ui/button";
 import { FileCode, Play, RefreshCcw, Save } from "lucide-react";
 
-type FileType = "php" | "html" | "css" | "js";
-
 interface File {
   id: string;
   name: string;
-  type: FileType;
+  type: "php";
   content: string;
 }
 
@@ -18,43 +16,84 @@ interface CodeEditorProps {
 }
 
 export default function CodeEditor({ onExecute }: CodeEditorProps) {
-  const [files, setFiles] = useState<File[]>([
-    {
-      id: "1",
-      name: "index.php",
-      type: "php",
-      content: "<?php\n// Welcome to PHP Editor\necho '<h1>Hello, World!</h1>';\n\n// You can also write HTML directly\n?>\n\n<div style=\"color: blue;\">\n  <p>This is HTML and CSS in PHP</p>\n  <button onclick=\"alert('This is JavaScript in PHP!')\">\n    Click me\n  </button>\n</div>"
-    },
-    {
-      id: "2",
-      name: "styles.css",
-      type: "css",
-      content: "body {\n  font-family: Arial, sans-serif;\n  margin: 20px;\n}\n\nh1 {\n  color: #333;\n}\n\nbutton {\n  background: #4c7bf3;\n  color: white;\n  padding: 8px 16px;\n  border: none;\n  border-radius: 4px;\n  cursor: pointer;\n}\n\nbutton:hover {\n  background: #2b5cd9;\n}"
-    },
-    {
-      id: "3",
-      name: "script.js",
-      type: "js",
-      content: "// Your JavaScript code here\nconsole.log('Script loaded');\n\nfunction greet() {\n  return 'Welcome to the PHP Editor!';\n}"
-    }
-  ]);
+  const [file, setFile] = useState<File>({
+    id: "1",
+    name: "index.php",
+    type: "php",
+    content: `<?php
+// Welcome to PHP Editor
+echo '<h1>Hello, World!</h1>';
+
+// Define some PHP variables
+$backgroundColor = "#f5f5f5";
+$textColor = "#333";
+$buttonColor = "#4c7bf3";
+$buttonHoverColor = "#2b5cd9";
+
+// Output CSS directly in the PHP file
+echo '<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    background-color: ' . $backgroundColor . ';
+    color: ' . $textColor . ';
+  }
+
+  h1 {
+    color: #333;
+  }
+
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: white;
+  }
+
+  button {
+    background: ' . $buttonColor . ';
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  button:hover {
+    background: ' . $buttonHoverColor . ';
+  }
+</style>';
+?>
+
+<div class="container">
+  <p>This is HTML directly in the PHP file</p>
   
-  const [activeFile, setActiveFile] = useState<string>("1");
+  <p>
+    <?php
+    // More PHP code
+    $currentTime = date('H:i:s');
+    echo "The current time is: $currentTime";
+    ?>
+  </p>
+  
+  <button onclick="showMessage()">Click me</button>
+</div>
+
+<script>
+  // JavaScript code within the PHP file
+  function showMessage() {
+    alert('This button was clicked at ' + new Date().toLocaleTimeString());
+  }
+  
+  console.log('Script loaded in PHP file');
+</script>`,
+  });
+  
   const [editorTheme, setEditorTheme] = useState("vs-dark");
   const editorRef = useRef<any>(null);
 
-  const getLanguageFromType = (type: FileType): string => {
-    switch (type) {
-      case "php": return "php";
-      case "html": return "html";
-      case "css": return "css";
-      case "js": return "javascript";
-      default: return "plaintext";
-    }
-  };
-
-  const currentFile = files.find(file => file.id === activeFile);
-  
   const handleEditorDidMount = (editor: any) => {
     editorRef.current = editor;
   };
@@ -62,25 +101,11 @@ export default function CodeEditor({ onExecute }: CodeEditorProps) {
   const handleContentChange = (value: string | undefined) => {
     if (!value) return;
     
-    setFiles(prevFiles => 
-      prevFiles.map(file => 
-        file.id === activeFile ? { ...file, content: value } : file
-      )
-    );
+    setFile({ ...file, content: value });
   };
 
   const handleRun = () => {
-    onExecute(files);
-  };
-
-  const getFileIcon = (type: FileType) => {
-    switch (type) {
-      case "php": return <FileCode className="w-4 h-4" />;
-      case "html": return <FileCode className="w-4 h-4" />;
-      case "css": return <FileCode className="w-4 h-4" />;
-      case "js": return <FileCode className="w-4 h-4" />;
-      default: return <FileCode className="w-4 h-4" />;
-    }
+    onExecute([file]);
   };
 
   // Initial execution
@@ -93,16 +118,10 @@ export default function CodeEditor({ onExecute }: CodeEditorProps) {
     <div className="editor-container bg-editor">
       <div className="flex items-center border-b border-border">
         <div className="flex overflow-x-auto">
-          {files.map((file) => (
-            <div
-              key={file.id}
-              className={`editor-tab ${activeFile === file.id ? "editor-tab-active" : ""}`}
-              onClick={() => setActiveFile(file.id)}
-            >
-              {getFileIcon(file.type)}
-              {file.name}
-            </div>
-          ))}
+          <div className="editor-tab editor-tab-active">
+            <FileCode className="w-4 h-4" />
+            {file.name}
+          </div>
         </div>
         
         <div className="ml-auto flex items-center p-1">
@@ -130,8 +149,8 @@ export default function CodeEditor({ onExecute }: CodeEditorProps) {
         <Editor
           height="100%"
           theme={editorTheme}
-          language={currentFile ? getLanguageFromType(currentFile.type) : "php"}
-          value={currentFile?.content}
+          language="php"
+          value={file.content}
           onChange={handleContentChange}
           onMount={handleEditorDidMount}
           options={{

@@ -25,22 +25,14 @@ export default function Preview({ files }: PreviewProps) {
     setError(null);
     
     try {
-      const phpFiles = files.filter(file => file.type === "php");
-      const cssFiles = files.filter(file => file.type === "css");
-      const jsFiles = files.filter(file => file.type === "js");
-      
-      if (phpFiles.length === 0) {
+      if (files.length === 0) {
         setOutput("<div>No PHP files to process</div>");
         return;
       }
       
-      // Normally we would send this to a backend to process PHP
-      // For now, we'll use our simulated PHP processor
-      const processedOutput = await processPhpCode(
-        phpFiles[0].content, 
-        cssFiles.map(f => f.content).join("\n"),
-        jsFiles.map(f => f.content).join("\n")
-      );
+      // Process the single PHP file that contains everything
+      const phpFile = files[0];
+      const processedOutput = await processPhpCode(phpFile.content);
       
       setOutput(processedOutput);
     } catch (err: any) {
