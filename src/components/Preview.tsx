@@ -1,0 +1,88 @@
+
+import { useState, useEffect } from "react";
+import { RefreshCcw } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { processPhpCode } from "@/lib/php-processor";
+
+interface File {
+  id: string;
+  name: string;
+  type: string;
+  content: string;
+}
+
+interface PreviewProps {
+  files: File[];
+}
+
+export default function Preview({ files }: PreviewProps) {
+  const [output, setOutput] = useState<string>("");
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const processFiles = async () => {
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      const phpFiles = files.filter(file => file.type === "php");
+      const cssFiles = files.filter(file => file.type === "css");
+      const jsFiles = files.filter(file => file.type === "js");
+      
+      if (phpFiles.length === 0) {
+        setOutput("<div>No PHP files to process</div>");
+        return;
+      }
+      
+      // Normally we would send this to a backend to process PHP
+      // For now, we'll use our simulated PHP processor
+      const processedOutput = await processPhpCode(
+        phpFiles[0].content, 
+        cssFiles.map(f => f.content).join("\n"),
+        jsFiles.map(f => f.content).join("\n")
+      );
+      
+      setOutput(processedOutput);
+    } catch (err: any) {
+      setError(err.message || "Error processing PHP code");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    processFiles();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [files]);
+
+  return (
+    <div className="h-full flex flex-col overflow-hidden">
+      <div className="border-b border-border p-2 flex justify-between items-center">
+        <h3 className="text-sm font-medium">Output Preview</h3>
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={processFiles}
+          disabled={isLoading}
+        >
+          <RefreshCcw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
+        </Button>
+      </div>
+      
+      {error && (
+        <div className="error-message">
+          {error}
+        </div>
+      )}
+      
+      <div className="flex-1 overflow-hidden">
+        <iframe
+          title="preview"
+          srcDoc={output}
+          className="w-full h-full bg-white"
+          sandbox="allow-scripts allow-same-origin"
+        />
+      </div>
+    </div>
+  );
+}

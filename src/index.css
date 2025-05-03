@@ -1,92 +1,56 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --background: 224 71% 4%;
+    --foreground: 213 31% 91%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 224 71% 4%;
+    --card-foreground: 213 31% 91%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
-
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
-
-    --radius: 0.5rem;
-
-    --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
-  }
-
-  .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 224 71% 4%;
+    --popover-foreground: 215 20.2% 65.1%;
 
     --primary: 210 40% 98%;
     --primary-foreground: 222.2 47.4% 11.2%;
 
-    --secondary: 217.2 32.6% 17.5%;
+    --secondary: 222.2 47.4% 11.2%;
     --secondary-foreground: 210 40% 98%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 223 47% 11%;
+    --muted-foreground: 215.4 16.3% 56.9%;
 
-    --accent: 217.2 32.6% 17.5%;
+    --accent: 216 34% 17%;
     --accent-foreground: 210 40% 98%;
 
-    --destructive: 0 62.8% 30.6%;
+    --destructive: 0 63% 31%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --border: 216 34% 17%;
+    --input: 216 34% 17%;
+    --ring: 224 71% 4%;
+
+    --radius: 0.5rem;
+
+    /* Editor theme colors */
+    --editor-background: 225 27% 16%;
+    --editor-foreground: 210 40% 98%;
+    --editor-line: 220 13% 25%;
+    --editor-selection: 217 19% 27%;
+    --editor-cursor: 214 100% 70%;
+
+    /* Code syntax highlighting */
+    --code-keyword: 290 70% 70%;
+    --code-function: 200 100% 70%; 
+    --code-string: 126 62% 65%;
+    --code-number: 35 100% 67%;
+    --code-comment: 220 13% 50%;
+    --code-tag: 355 85% 70%;
+    --code-attribute: 40 100% 60%;
+    --code-variable: 224 71% 80%;
   }
 }
 
@@ -97,5 +61,35 @@
 
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer components {
+  .editor-resizer {
+    @apply w-2 hover:w-3 cursor-col-resize bg-border transition-all duration-150 ease-in-out absolute right-0 top-0 bottom-0 z-10;
+  }
+
+  .editor-container {
+    @apply flex flex-col w-full h-full overflow-hidden;
+  }
+
+  .editor-tab {
+    @apply px-4 py-2 cursor-pointer border-r border-border flex gap-2 items-center text-sm transition-all;
+  }
+
+  .editor-tab-active {
+    @apply bg-accent text-accent-foreground;
+  }
+
+  .editor-line-numbers {
+    @apply pr-4 text-right text-editor-line select-none;
+  }
+
+  .output-container {
+    @apply bg-white text-black w-full h-full overflow-auto p-4;
+  }
+
+  .error-message {
+    @apply p-2 bg-destructive/20 text-destructive font-mono text-sm;
   }
 }

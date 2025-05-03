@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -52,6 +53,23 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
+				editor: {
+					DEFAULT: 'hsl(var(--editor-background))',
+					foreground: 'hsl(var(--editor-foreground))',
+					line: 'hsl(var(--editor-line))',
+					selection: 'hsl(var(--editor-selection))',
+					cursor: 'hsl(var(--editor-cursor))',
+				},
+				code: {
+					keyword: 'hsl(var(--code-keyword))',
+					function: 'hsl(var(--code-function))',
+					string: 'hsl(var(--code-string))',
+					number: 'hsl(var(--code-number))',
+					comment: 'hsl(var(--code-comment))',
+					tag: 'hsl(var(--code-tag))',
+					attribute: 'hsl(var(--code-attribute))',
+					variable: 'hsl(var(--code-variable))',
+				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',
@@ -84,11 +102,16 @@ export default {
 					to: {
 						height: '0'
 					}
+				},
+				blink: {
+					'0%, 100%': { opacity: '1' },
+					'50%': { opacity: '0' },
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'cursor-blink': 'blink 1s step-end infinite',
 			}
 		}
 	},
